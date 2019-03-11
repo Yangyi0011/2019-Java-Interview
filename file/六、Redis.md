@@ -1,6 +1,6 @@
 # 一、Redis简介
 
-​	Redis是一个基于==单线程==的键值对内存数据库，数据库中的键值对由字典保存。每个数据库都有一个对应的字典，这个字典被称之为键空间【key space】。当用户添加一个键值对到数据库时（不论键值对是什么类型）， 程序就将该键值对添加到键空间。
+​	Redis是一个基于单线程的键值对内存数据库，数据库中的键值对由字典保存。每个数据库都有一个对应的字典，这个字典被称之为键空间【key space】。当用户添加一个键值对到数据库时（不论键值对是什么类型）， 程序就将该键值对添加到键空间。
 
 ​	字典的键是一个字符串对象。字典的值则可以是包括【字符串（String）、列表（List）、哈希表（Hash）、集合（Set）或有序集（ZSet）】在内的任意一种 Redis 类型对象。
 
@@ -68,7 +68,7 @@ typedef struct redisObject {
 
 ![Redis底层](C:\Users\Yang\Desktop\面试准备/img/Redis底层.svg)
 
-`REDIS_ENCODING_ZIPMAP` 没有出现在图中， ==因为从 Redis 2.6 开始， ZIPMAP不再是任何数据类型的底层结构==。
+`REDIS_ENCODING_ZIPMAP` 没有出现在图中， 因为从 Redis 2.6 开始， ZIPMAP不再是任何数据类型的底层结构。
 
 **小结：**
 
@@ -199,7 +199,7 @@ zrank board zhaoliuCopy to clipboardErrorCopied
 
 ![redis主从](../img/redis-master-slave.png)
 
-单机的 redis，能够承载的 QPS 大概就在上万到几万不等。对于缓存来说，一般都是用来支撑**读高并发**的。因此架构做成主从(master-slave)架构，一主多从，主负责写，并且将数据复制到其它的 slave 节点，从节点负责读。所有的**读请求全部走从节点**，实现==**主从复制，读写分离**==，还可以很轻松实现水平扩容，**支撑读高并发**。
+单机的 redis，能够承载的 QPS 大概就在上万到几万不等。对于缓存来说，一般都是用来支撑**读高并发**的。因此架构做成主从(master-slave)架构，一主多从，主负责写，并且将数据复制到其它的 slave 节点，从节点负责读。所有的**读请求全部走从节点**，实现**主从复制，读写分离**，还可以很轻松实现水平扩容，**支撑读高并发**。
 
 主从模式的问题：当从机故障宕机时，redis不能通知客户端哪个节点不可用了，需要手动去更改客户端的配置重新连接，而主机故障宕机时，从机因没有主节点而同步中断，需要人工手动进行故障转移。为了解决这两个问题，在2.8版本之后redis正式提供了sentinel（哨兵）架构。
 
@@ -211,13 +211,13 @@ zrank board zhaoliuCopy to clipboardErrorCopied
 
 当启动一个 slave node 的时候，它会发送一个 `PSYNC` 命令给 master node。
 
-如果这是 slave node 初次连接到 master node，那么会触发一次 `full resynchronization` **==全量复制==**。此时 master 会启动一个后台线程，开始生成一份 `RDB` 快照文件，同时还会将从客户端 client 新收到的所有写命令缓存在内存中。`RDB` 文件生成完毕后， master 会将这个 `RDB` 发送给 slave，slave 会先**写入本地磁盘，然后再从本地磁盘加载到内存**中，接着 master 会将内存中缓存的写命令发送到 slave，slave 也会同步这些数据。slave node 如果跟 master node 有网络故障，断开了连接，会自动重连，连接之后 master node 仅会复制给 slave 部分缺少的数据。
+如果这是 slave node 初次连接到 master node，那么会触发一次 `full resynchronization` **全量复制**。此时 master 会启动一个后台线程，开始生成一份 `RDB` 快照文件，同时还会将从客户端 client 新收到的所有写命令缓存在内存中。`RDB` 文件生成完毕后， master 会将这个 `RDB` 发送给 slave，slave 会先**写入本地磁盘，然后再从本地磁盘加载到内存**中，接着 master 会将内存中缓存的写命令发送到 slave，slave 也会同步这些数据。slave node 如果跟 master node 有网络故障，断开了连接，会自动重连，连接之后 master node 仅会复制给 slave 部分缺少的数据。
 
 ### 主从复制的断点续传
 
-从 redis2.8 开始，就支持主从复制的断点续传，如果主从复制过程中，网络连接断掉了，那么可以接着上次复制的地方，继续复制下去，而不是从头开始复制一份。【**==增量复制==**】
+从 redis2.8 开始，就支持主从复制的断点续传，如果主从复制过程中，网络连接断掉了，那么可以接着上次复制的地方，继续复制下去，而不是从头开始复制一份。【**增量复制**】
 
-master node 会在内存中维护一个 backlog，master 和 slave 都会保存一个 replica offset 还有一个 master run id，offset 就是保存在 backlog 中的。如果 master 和 slave 网络连接断掉了，slave 会让 master 从上次 replica offset 开始继续复制，如果没有找到对应的 offset，那么就会执行一次 `resynchronization`**==全量复制==**。
+master node 会在内存中维护一个 backlog，master 和 slave 都会保存一个 replica offset 还有一个 master run id，offset 就是保存在 backlog 中的。如果 master 和 slave 网络连接断掉了，slave 会让 master 从上次 replica offset 开始继续复制，如果没有找到对应的 offset，那么就会执行一次 `resynchronization`**全量复制**。
 
 ### 无磁盘化复制
 
@@ -270,7 +270,7 @@ slave 不会过期 key，只会等待 master 过期 key。如果 master 过期�
 
 ​	redis主从或哨兵模式的每个实例都是**全量存储所有数据**，浪费内存且有木桶效应。为了最大化利用内存，可以采用分布式集群【Redis-Cluster】，就是分布式存储，集群将数据分片存储，每组节点存储一部分数据，从而达到分布式集群的目的。
 
-​	上图是主从模式与分布式集群模式的区别，redis分布式集群中数据是和槽（slot）挂钩的，其总共定义了**==16384个槽==**，所有的数据根据==一致性哈希算法==会被映射到这16384个槽中的某个槽中；另一方面，这16384个槽是按照设置被分配到不同的redis节点上。
+​	上图是主从模式与分布式集群模式的区别，redis分布式集群中数据是和槽（slot）挂钩的，其总共定义了**16384个槽**，所有的数据根据一致性哈希算法会被映射到这16384个槽中的某个槽中；另一方面，这16384个槽是按照设置被分配到不同的redis节点上。
 
 ​	但分布式集群模式会直接导致访问数据方式的改变，比如客户端向A节点发送GET命令但该数据在B节点，redis会返回重定向错误给客户端让客户端再次发送请求，这也直接导致了必须在相同节点才能执行的一些高级功能（如Lua、事务、Pipeline）无法使用。另外还会引发数据分配的一致性hash问题可以参看[这里](https://github.com/crossoverJie/JCSprout/blob/master/MD/Consistent-Hash.md)。
 
@@ -362,7 +362,7 @@ class LRUCache {
             recentlyList.remove((Integer) key);
             
         //若容量已满，则移除链表中的第一个key，并移除对应的map元素 
-        }else if(cacheMap.size() == capacity){
+        }else if(cacheMap.size()  capacity){
             cacheMap.remove(recentlyList.removeFirst());
         }
         //将新加入的key放到链表尾部
@@ -414,7 +414,7 @@ class LRUCache {
 
 ## 4、热点key
 
-​	缓存中的某些Key(可能对应用与某个促销商品)对应的value存储在集群中一台机器，使得所有流量涌向同一机器，造成系统性能瓶颈，该问题的挑战在于==它无法通过增加机器容量来解决==。
+​	缓存中的某些Key(可能对应用与某个促销商品)对应的value存储在集群中一台机器，使得所有流量涌向同一机器，造成系统性能瓶颈，该问题的挑战在于它无法通过增加机器容量来解决。
 
 1. 客户端热点key缓存：将热点key对应的value缓存在客户端本地，并且设置一个失效时间。
 2. 将热点key分散为多个子key，然后存储到缓存集群的不同机器上，这些子key对应的value都和热点key是一样的。

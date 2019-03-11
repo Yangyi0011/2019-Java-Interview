@@ -21,7 +21,7 @@
 
 ## 2、循环依赖的场景
 
-1. 构造器注入的循环依赖。【**==这个Spring解决不了==**】
+1. 构造器注入的循环依赖。【**这个Spring解决不了**】
 
    ​	StudentA有参构造是StudentB。StudentB的有参构造是StudentC，StudentC的有参构造是StudentA ，这样就产生了一个循环依赖的情况，所以**在使用构造器注入实例化bean时，若是存在构造器的循环依赖，则IOC容器在实例化该bean时会报错。**
 
@@ -29,7 +29,7 @@
 
    ​	**构造器注入方式**在 bean 刚被实例化时【使用有参构造】，就要注入相关的依赖，如：在实例化StudentA时，因StudentA依赖StudentB，所以IOC容器会先去实例化StudentB，而StudentB又依赖StudentC，所以IOC容器又会先去实例化StudentC，而因StudentC依赖StudentA，IOC容器一检查，发现StudentA还没构造完成……如此就形成了一个相互依赖的死循环……。
 
-2. setter注入的循环依赖【==可以解决==】
+2. setter注入的循环依赖【可以解决】
 
    ​	field属性的循环依赖【setter方式 单例，默认方式-->通过递归方法找出当前Bean所依赖的Bean，然后提前缓存【会放入Cach中】起来。通过提前暴露 -->暴露一个exposedObject用于返回提前暴露的Bean。】
 
@@ -37,7 +37,7 @@
 
    ![](../img/Spring Bean的生命周期.png)
 
-   图中前两步骤得知：**==Spring是先将Bean对象实例化【依赖无参构造函数】--->再设置对象属性的，==**所以即便有循环依赖，也不会出现问题（报错）；
+   图中前两步骤得知：**Spring是先将Bean对象实例化【依赖无参构造函数】--->再设置对象属性的，**所以即便有循环依赖，也不会出现问题（报错）；
 
    不报错的原因：
 
@@ -45,7 +45,7 @@
 
 ## 3、如何解决循环依赖？
 
-   **使用无参构造器，通过==属性（字段）注入==即可。**
+   **使用无参构造器，通过属性（字段）注入即可。**
 
 # 四、Spring bean 的生命周期。
 
@@ -108,7 +108,7 @@
 
 4. Spring AOP实现
 
-   ​	Spring AOP采用的是**==动态代理==**模式，具体实现有：
+   ​	Spring AOP采用的是**动态代理**模式，具体实现有：
 
    1. jdk 反射机制：
 
@@ -144,8 +144,8 @@
 
 # 八、SpringBoot自动配置原理
 
-1. SpringBoot启动的时候先加载主配置类【标有@SpringBootConfiguration的类】，依靠==@EnableAutoConfiguration==开启自动配置功能 。
-2. 自动配置功能开启后，SpringBoot会**==将类路径下  META-INF/spring.factories 里面配置的所有EnableAutoConfiguration的值加入到IOC容器中，这些值其实就是一个个自动配置类；==**
+1. SpringBoot启动的时候先加载主配置类【标有@SpringBootConfiguration的类】，依靠@EnableAutoConfiguration开启自动配置功能 。
+2. 自动配置功能开启后，SpringBoot会**将类路径下  META-INF/spring.factories 里面配置的所有EnableAutoConfiguration的值加入到IOC容器中，这些值其实就是一个个自动配置类；**
 3. 接着SpringBoot为每一个自动配置类进行自动配置功能；
-4. 根据==@Conditional==的派生注解判断当前配置类是否生效，若可以生效，则这个配置类就会给容器中添加各种组件；
-5. 这些组件的属性是从对应的**==xxxProperties类==**中获取的，而这些类里面的每一个属性又是根据**==@ConfigurationProperties==**注解和对应的配置文件进行绑定的；
+4. 根据@Conditional的派生注解判断当前配置类是否生效，若可以生效，则这个配置类就会给容器中添加各种组件；
+5. 这些组件的属性是从对应的**xxxProperties类**中获取的，而这些类里面的每一个属性又是根据**@ConfigurationProperties**注解和对应的配置文件进行绑定的；

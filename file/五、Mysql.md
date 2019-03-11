@@ -38,12 +38,12 @@
 
 ## 4、总结
 
-1. **事务隔离级别为==读已提交==时，写数据只会锁住相应的行。**
-2. **事务隔离级别为==可重复读==时，若检索条件有索引（包括主键索引），默认加锁方式是next-key 锁【间隙锁】；若检索条件没有索引，则更新数据时会锁住整张表。一个间隙被事务加了锁，其他事务是不能在这个间隙插入记录的，这样可以防止幻读。**
-3. **事务隔离级别为==串行化==时，读写数据都会锁住整张表**
+1. **事务隔离级别为读已提交时，写数据只会锁住相应的行。**
+2. **事务隔离级别为可重复读时，若检索条件有索引（包括主键索引），默认加锁方式是next-key 锁【间隙锁】；若检索条件没有索引，则更新数据时会锁住整张表。一个间隙被事务加了锁，其他事务是不能在这个间隙插入记录的，这样可以防止幻读。**
+3. **事务隔离级别为串行化时，读写数据都会锁住整张表**
 4. **隔离级别越高，越能保证数据的完整性和一致性，但是对并发性能的影响也越大。**
-5. **MySQL默认隔离级别是==可重复读==。**
-6. 查看当前数据库的事务隔离级别：**==show variables like 'tx_isolation';==**
+5. **MySQL默认隔离级别是可重复读。**
+6. 查看当前数据库的事务隔离级别：**show variables like 'tx_isolation';**
 7. [**MYSQL MVCC实现机制**](https://blog.csdn.net/whoamiyang/article/details/51901888)
 8. [**next-key 锁【间隙锁】**](https://blog.csdn.net/bigtree_3721/article/details/73731377)
 
@@ -70,8 +70,8 @@
    **自动加锁。**
 
    对于UPDATE、DELETE和INSERT语句，InnoDB会自动给涉及的数据集加**排他锁**；对于普通SELECT语句，InnoDB不会加任何锁；当然我们也可以显示的加锁：
-   	加**共享锁：**select * from tableName where ... **==lock in share mode==**
-   	加**排他锁：**select * from tableName where ... **==for update==** 
+   	加**共享锁：**select * from tableName where ... **lock in share mode**
+   	加**排他锁：**select * from tableName where ... **for update** 
 
 4. **间隙锁【Next-Key锁】**
 
@@ -128,7 +128,7 @@
 
 6. **共享锁**
 
-   **共享锁，也称读锁，多用于判断数据是否存在，多个读操作可以同时进行而不会互相影响。**==如果事务对读锁进行修改操作，很可能会造成死锁==。如下图所示。
+   **共享锁，也称读锁，多用于判断数据是否存在，多个读操作可以同时进行而不会互相影响。**如果事务对读锁进行修改操作，很可能会造成死锁。如下图所示。
 
    ![mysql共享锁.png](../img/mysql共享锁.png)
 
@@ -167,7 +167,7 @@
 
    通过检查InnoDB_row_lock 状态变量分析系统上的行锁的争夺情况，命令：
 
-   ​	==**show status like 'innodb_row_lock%'**==
+   ​	**show status like 'innodb_row_lock%'**
 
    ```mysql
    mysql> show status like 'innodb_row_lock%';
@@ -183,10 +183,10 @@
    ```
 
    innodb_row_lock_current_waits: 当前正在等待锁定的数量
-   ==innodb_row_lock_time==: 从系统启动到现在锁定总时间长度；【非常重要的参数】
-   ==innodb_row_lock_time_avg==: 每次等待所花平均时间；【非常重要的参数】
+   innodb_row_lock_time: 从系统启动到现在锁定总时间长度；【非常重要的参数】
+   innodb_row_lock_time_avg: 每次等待所花平均时间；【非常重要的参数】
    innodb_row_lock_time_max: 从系统启动到现在等待最长的一次所花的时间；
-   ==innodb_row_lock_waits==: 系统启动后到现在总共等待的次数；非常重要的参数，直接决定优化的方向和策略。
+   innodb_row_lock_waits: 系统启动后到现在总共等待的次数；非常重要的参数，直接决定优化的方向和策略。
 
 8. **行锁优化**
 
@@ -292,7 +292,7 @@
 
 6. 查看加锁情况
 
-   **==show open tables;==** 1表示加锁，0表示未加锁。
+   **show open tables;** 1表示加锁，0表示未加锁。
 
    ```mysql
    mysql> show open tables where in_use > 0;
@@ -307,7 +307,7 @@
 
    通过检查table_locks_waited 和 table_locks_immediate 状态变量分析系统上的表锁定，命令：
 
-   ​	**==show status like 'table_locks%';==**
+   ​	**show status like 'table_locks%';**
 
    ```mysql
    mysql> show status like 'table_locks%';
@@ -476,7 +476,7 @@ select 查询的序列号，包含一组可以重复的数字，表示查询中s
 
 ​	表所使用的分区，如果要统计十年公司订单的金额，可以把数据分为十个区，每一年代表一个区。这样可以大大的提高查询效率。
 
-### 5、==type==
+### 5、type
 
 ​	这是一个非常重要的参数，连接类型，常见的有：all , index , range , ref , eq_ref , const , system , null 八个级别。
 
@@ -488,7 +488,7 @@ select 查询的序列号，包含一组可以重复的数字，表示查询中s
 
 - **index**：（full index scan）全索引文件扫描比all好很多，毕竟从索引树中找数据，比从全表中找数据要快。
 
-- **range**：只检索给定范围的行，使用索引来匹配行。范围缩小了，当然比全表扫描和全索引文件扫描要快。==sql语句中一般会有between，>，< 等查询，IN()和OR列表，也会显示range==。
+- **range**：只检索给定范围的行，使用索引来匹配行。范围缩小了，当然比全表扫描和全索引文件扫描要快。sql语句中一般会有between，>，< 等查询，IN()和OR列表，也会显示range。
 
 - **ref**：非唯一性索引扫描，本质上也是一种索引访问，**返回所有匹配某个单独值的行**。比如查询公司所有属于研发团队的同事，匹配的结果是多个并非唯一值。
 
@@ -506,7 +506,7 @@ select 查询的序列号，包含一组可以重复的数字，表示查询中s
 
   
 
-- **const**：表示通过索引一次就可以找到，==const用于比较primary key 或者unique索引。因为只匹配一行数据，所以很快，若将主键至于where列表中，MySQL就能将该查询转换为一个常量。==
+- **const**：表示通过索引一次就可以找到，const用于比较primary key 或者unique索引。因为只匹配一行数据，所以很快，若将主键至于where列表中，MySQL就能将该查询转换为一个常量。
 
   ```mysql
   explain select * from t1 where id = 1
@@ -552,12 +552,12 @@ select 查询的序列号，包含一组可以重复的数字，表示查询中s
 
 ​	一个百分比的值，和rows 列的值一起使用，可以估计出查询执行计划(QEP)中的前一个表的结果集，从而确定join操作的循环次数。小表驱动大表，减轻连接的次数。
 
-### 12、==extra==
+### 12、extra
 
 **包含不适合在其他列中显示但又十分重要的额外信息。**
 
-- **Using filesort**： **“文件排序”，说明MySQL中无法利用索引完成的排序操作 ，MySQL会对数据使用一个外部的索引排序，而不是按照表内的索引顺序进行读取。**==出现这个就要立刻优化sql。==
-- **Using temporary**： **使用了临时表保存中间结果**，说明MySQL在对查询结果排序时使用临时表。常见于排序 order by 和 分组查询 group by时，需要借助辅助表再进行排序的情况（这种情况是多个表都涉及到排序字段才会引起的）。 ==出现这个更要立刻优化sql。==
+- **Using filesort**： **“文件排序”，说明MySQL中无法利用索引完成的排序操作 ，MySQL会对数据使用一个外部的索引排序，而不是按照表内的索引顺序进行读取。**出现这个就要立刻优化sql。
+- **Using temporary**： **使用了临时表保存中间结果**，说明MySQL在对查询结果排序时使用临时表。常见于排序 order by 和 分组查询 group by时，需要借助辅助表再进行排序的情况（这种情况是多个表都涉及到排序字段才会引起的）。 出现这个更要立刻优化sql。
 - **Using index**： 表示相应的select 操作中使用了覆盖索引（Covering index），避免访问了表的数据行，效果不错！**如果同时出现Using where，表明索引被用来执行索引键值的查找。如果没有同时出现Using where，表示索引只是用来读取数据而非执行查找动作。**
   覆盖索引（Covering Index） ：也叫索引覆盖，就是select 的数据列只用从索引中就能够取得，不必读取数据行，MySQL可以利用索引返回select 列表中的字段，而不必根据索引再次读取数据文件。
 - **Using index condition**： 在5.6版本后加入的新特性，优化器会在索引存在的情况下，通过符合RANGE范围的条数 和 总数的比例来选择是使用索引还是进行全表遍历。
