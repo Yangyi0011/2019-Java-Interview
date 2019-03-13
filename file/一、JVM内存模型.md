@@ -167,7 +167,7 @@
 
 - Major GC：
 
-  ​	老年代空间不足，发起 Major GC，只回收老年代的内存。但一般发起Major GC时也要发起Minor GC，所以JVM会直接发起一次 Full GC，故Major GC比较少见。注：**老年代在Java8中已被元空间代替**。
+  ​	老年代空间不足，发起 Major GC，只回收老年代的内存。但一般发起Major GC时也要发起Minor GC，所以JVM会直接发起一次 Full GC，故Major GC比较少见。
 
 - Full GC:
 
