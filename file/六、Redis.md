@@ -362,7 +362,7 @@ class LRUCache {
             recentlyList.remove((Integer) key);
             
         //若容量已满，则移除链表中的第一个key，并移除对应的map元素 
-        }else if(cacheMap.size()  capacity){
+        }else if(cacheMap.size() == capacity){
             cacheMap.remove(recentlyList.removeFirst());
         }
         //将新加入的key放到链表尾部
