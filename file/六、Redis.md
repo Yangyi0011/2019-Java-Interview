@@ -66,7 +66,7 @@ typedef struct redisObject {
 
 `ptr` 是一个指针，指向实际保存值的数据结构，这个数据结构由 `type` 属性和 `encoding` 属性决定。
 
-![Redis底层](C:\Users\Yang\Desktop\面试准备/img/Redis底层.svg)
+![Redis底层](img/Redis底层.svg)
 
 `REDIS_ENCODING_ZIPMAP` 没有出现在图中， 因为从 Redis 2.6 开始， ZIPMAP不再是任何数据类型的底层结构。
 
