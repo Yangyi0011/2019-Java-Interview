@@ -207,7 +207,7 @@ zrank board zhaoliuCopy to clipboardErrorCopied
 
 ### 主从复制的核心原理
 
-![](C:\Users\Yang\Desktop\面试准备/img/redis-master-slave-replication.png)
+![](../img/redis-master-slave-replication.png)
 
 当启动一个 slave node 的时候，它会发送一个 `PSYNC` 命令给 master node。
 
@@ -242,7 +242,7 @@ slave 不会过期 key，只会等待 master 过期 key。如果 master 过期�
 
 ## 2、哨兵模式
 
-![redis哨兵](C:\Users\Yang\Desktop\面试准备/img/redis哨兵.png)
+![redis哨兵](../img/redis哨兵.png)
 
 哨兵模式是主从模式的故障自动转移版本，由Sentinel节点定期监控集群节点是否出现了故障，当主节点出现故障时，由Redis Sentinel自动完成故障发现和转移，并通知应用方，实现高可用性。若主机下线了，则会在所有从机中选出一个作为【新主机】，下线的主机再次上线时，会自动转为【新主机】的从机。
 
@@ -266,7 +266,7 @@ slave 不会过期 key，只会等待 master 过期 key。如果 master 过期�
 
 ## 3、分布式集群
 
-![redis分布式集群](C:\Users\Yang\Desktop\面试准备/img/redis分布式集群.png)
+![redis分布式集群](../img/redis分布式集群.png)
 
 ​	redis主从或哨兵模式的每个实例都是**全量存储所有数据**，浪费内存且有木桶效应。为了最大化利用内存，可以采用分布式集群【Redis-Cluster】，就是分布式存储，集群将数据分片存储，每组节点存储一部分数据，从而达到分布式集群的目的。
 
